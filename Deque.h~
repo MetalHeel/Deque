@@ -541,8 +541,9 @@ class Deque {
             this.a = that.a;
             this.ROWS = that.ROWS;
             this.COLUMNS = that.COLUMNS;
-            this.our_back = copy(that.our_front, that.our_back, this.our_front);
+            our_back = copy(that.our_front, that.our_back, this.our_front);
             this.our_size = that.our_size;
+            
             assert(valid());}
 
         // ----------

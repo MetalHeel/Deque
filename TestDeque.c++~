@@ -253,7 +253,7 @@ struct TestDeque : CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE(TestDeque);
     CPPUNIT_TEST(test_constructor);
-    /*CPPUNIT_TEST(test_equality);
+    CPPUNIT_TEST(test_equality);
     CPPUNIT_TEST(test_comparison);
     CPPUNIT_TEST(test_assignment);
     CPPUNIT_TEST(test_subscript);
@@ -272,7 +272,7 @@ struct TestDeque : CppUnit::TestFixture {
     CPPUNIT_TEST(test_size);
     CPPUNIT_TEST(test_swap);
     CPPUNIT_TEST(test_iterator);
-    CPPUNIT_TEST(test_const_iterator);*/
+    CPPUNIT_TEST(test_const_iterator);
     CPPUNIT_TEST_SUITE_END();};
 
 // ----
