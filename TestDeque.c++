@@ -24,6 +24,8 @@ To test the program:
 
 #include "Deque.h"
 
+using namespace std;
+
 // ---------
 // TestDeque
 // ---------
@@ -140,8 +142,8 @@ struct TestDeque : CppUnit::TestFixture {
     void test_end () {
               C x(10, 2);
         const C y(10, 2);
-        typename C::iterator       p = x.end();
-        typename C::const_iterator q = y.end();
+        typename C::iterator       p = x.end() - 1;
+        typename C::const_iterator q = y.end() - 1;
         assert(*p == *q);}
 
     // ----------
@@ -253,8 +255,8 @@ struct TestDeque : CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE(TestDeque);
     CPPUNIT_TEST(test_constructor);
-    /*CPPUNIT_TEST(test_equality);
-    CPPUNIT_TEST(test_comparison);
+    CPPUNIT_TEST(test_equality);
+    /*CPPUNIT_TEST(test_comparison);
     CPPUNIT_TEST(test_assignment);
     CPPUNIT_TEST(test_subscript);
     CPPUNIT_TEST(test_at);

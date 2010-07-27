@@ -22,7 +22,12 @@
 // using
 // -----
 
-using namespace std::rel_ops;
+using std::rel_ops::operator!=;
+using std::rel_ops::operator<=;
+using std::rel_ops::operator>;
+using std::rel_ops::operator>=;
+
+using namespace std;
 
 // -------
 // destroy
@@ -48,7 +53,7 @@ BI uninitialized_copy (A& a, II b, II e, BI x) {
             ++b;
             ++x;}}
     catch (...) {
-        my_destroy(a, p, x);
+        destroy(a, p, x);
         throw;}
     return x;}
 
@@ -64,7 +69,7 @@ BI uninitialized_fill (A& a, BI b, BI e, const U& v) {
             a.construct(&*b, v);
             ++b;}}
     catch (...) {
-        my_destroy(a, p, b);
+        destroy(a, p, b);
         throw;}
     return e;}
 
@@ -100,9 +105,10 @@ class Deque {
          * <your documentation>
          */
         friend bool operator == (const Deque& lhs, const Deque& rhs) {
-            // <your code>
-            // you must use std::equal()
-            return true;}
+          if(!lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()) && !lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end())){
+                return true;
+          }
+            return false;}
 
         // ----------
         // operator <
@@ -112,22 +118,21 @@ class Deque {
          * <your documentation>
          */
         friend bool operator < (const Deque& lhs, const Deque& rhs) {
-            // <your code>
-            // you must use std::lexicographical_compare()
-            return true;}
+            return lexicographical_compare(lhs._front, lhs._back, rhs._front, rhs._back);}
 
     private:
         // ----
         // data
         // ----
 
-        allocator_type a;
-        const int ROWS;
-        const int COLUMNS;
-        pointer* container;
-        int our_size;
-        T* our_front;
-        T* our_back;
+        allocator_type _a;
+        int ROWS;
+        //const int COLUMNS;
+        T* container;
+        int _size;
+        int tsize;
+        T* _front;
+        T* _back;
 
     private:
         // -----
@@ -164,8 +169,7 @@ class Deque {
                  * <your documentation>
                  */
                 friend bool operator == (const iterator& lhs, const iterator& rhs) {
-                    // <your code>
-                    return true;}
+                    return lhs.p == rhs.p;}
 
                 // ----------
                 // operator +
@@ -192,7 +196,7 @@ class Deque {
                 // data
                 // ----
 
-                // <your data>
+                pointer p;
 
             private:
                 // -----
@@ -211,8 +215,8 @@ class Deque {
                 /**
                  * <your documentation>
                  */
-                iterator (/* <your arguments> */) {
-                    // <your code>
+                iterator (T* v) : p(v){
+                    cout << "test" << endl;
                     assert(valid());}
 
                 // Default copy, destructor, and copy assignment.
@@ -228,10 +232,7 @@ class Deque {
                  * <your documentation>
                  */
                 reference operator * () const {
-                    // <your code>
-                    // dummy is just to be able to compile the skeleton, remove it
-                    static value_type dummy;
-                    return dummy;}
+                    return *p;}
 
                 // -----------
                 // operator ->
@@ -251,7 +252,7 @@ class Deque {
                  * <your documentation>
                  */
                 iterator& operator ++ () {
-                    // <your code>
+                    ++(*this);
                     assert(valid());
                     return *this;}
 
@@ -292,7 +293,7 @@ class Deque {
                 /**
                  * <your documentation>
                  */
-                iterator& operator += (difference_type d) {
+                    iterator& operator += (difference_type d) {for(int i = 0; i < 10; i++)
                     // <your code>
                     assert(valid());
                     return *this;}
@@ -305,7 +306,10 @@ class Deque {
                  * <your documentation>
                  */
                 iterator& operator -= (difference_type d) {
-                    // <your code>
+                    while(d > 0){
+                        --(*this);
+                        --d; 
+                    }
                     assert(valid());
                     return *this;}};
 
@@ -335,8 +339,7 @@ class Deque {
                  * <your documentation>
                  */
                 friend bool operator == (const const_iterator& lhs, const const_iterator& rhs) {
-                    // <your code>
-                    return true;}
+                  return lhs.c_ptr == rhs.c_ptr;}
 
                 // ----------
                 // operator +
@@ -363,7 +366,7 @@ class Deque {
                 // data
                 // ----
 
-                // <your data>
+                const pointer c_ptr;
 
             private:
                 // -----
@@ -382,8 +385,7 @@ class Deque {
                 /**
                  * <your documentation>
                  */
-                const_iterator (/* <your arguments> */) {
-                    // <your code>
+                const_iterator (T* v) : c_ptr(v) {
                     assert(valid());}
 
                 // Default copy, destructor, and copy assignment.
@@ -399,10 +401,7 @@ class Deque {
                  * <your documentation>
                  */
                 reference operator * () const {
-                    // <your code>
-                    // dummy is just to be able to compile the skeleton, remove it
-                    static value_type dummy;
-                    return dummy;}
+                    return *c_ptr;}
 
                 // -----------
                 // operator ->
@@ -422,7 +421,7 @@ class Deque {
                  * <your documentation>
                  */
                 const_iterator& operator ++ () {
-                    // <your code>
+                    ++(*this);
                     assert(valid());
                     return *this;}
 
@@ -489,25 +488,33 @@ class Deque {
          * <your documentation>
          */
         explicit Deque (const allocator_type& a = allocator_type()) {
+            _a = a;
             ROWS = 10;
-            COLUMNS = 10;
-            this.a = a;
-            our_size = 0;
+            tsize = ROWS;
+            container = _a.allocate(ROWS);
+            _size = 0;
+            _front = container + (ROWS / 2);
+            _back = _front;
             assert(valid());}
 
         /**
          * <your documentation>
          */
         explicit Deque (size_type s, const_reference v = value_type(), const allocator_type& a = allocator_type()) {
-            this.a = a;
-            our_size = s;
+            _a = a;
+            _size = s;
             ROWS = 10;
-            COLUMNS = 10;
-            container = a.allocate(ROWS);
-            container[ROWS / 2] = a.allocate(COLUMNS);
-            our_front = container[ROWS / 2][COLUMNS / 2];
-            our_back = front;
+            tsize = ROWS * (((_size / ROWS) + 1) * 2);
+            if(s > 10)
+                container = _a.allocate(tsize);
+            else
+                container = _a.allocate(ROWS);
 
+            _front = container + (tsize / 2);
+            _back = _front + _size;
+
+            uninitialized_fill(_a, _front, _back, v);
+/*
             for(int i = 0; i < 5; i++) {
                 if(s == 0)
                     break;
@@ -531,19 +538,21 @@ class Deque {
                 our_back++;
                 s--;
             }
-
+*/
             assert(valid());}
 
         /**
          * <your documentation>
          */
         Deque (const Deque& that) {
-            this.a = that.a;
-            this.ROWS = that.ROWS;
-            this.COLUMNS = that.COLUMNS;
-            our_back = copy(that.our_front, that.our_back, this.our_front);
-            this.our_size = that.our_size;
-            
+            _a = that._a;
+            ROWS = that.ROWS;
+            container = _a.allocate(that.tsize);
+            tsize = that.tsize;
+            int offset = that._front - that.container;
+            _front = container + offset;
+            _back = uninitialized_copy(_a, that._front, that._back, _front);
+            _size = that._size;
             assert(valid());}
 
         // ----------
@@ -634,15 +643,13 @@ class Deque {
          * <your documentation>
          */
         iterator begin () {
-            // <your code>
-            return iterator(/* <your arguments> */);}
+            return iterator(_front);}
 
         /**
          * <your documentation>
          */
         const_iterator begin () const {
-            // <your code>
-            return const_iterator(/* <your arguments> */);}
+            return const_iterator(_front);}
 
         // -----
         // clear
@@ -673,15 +680,13 @@ class Deque {
          * <your documentation>
          */
         iterator end () {
-            // <your code>
-            return iterator(/* <your arguments> */);}
+            return iterator(_back);}
 
         /**
          * <your documentation>
          */
         const_iterator end () const {
-            // <your code>
-            return const_iterator(/* <your arguments> */);}
+            return const_iterator(_back);}
 
         // -----
         // erase
