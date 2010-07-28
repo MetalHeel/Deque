@@ -127,17 +127,13 @@ class Deque {
         // ----
 
         allocator_type _a;
-        typename A::template rebind<T*>::other _a2;
         int ROWS;
-        int COLUMNS;
-        T** container;
+        //const int COLUMNS;
+        T* container;
         unsigned int _size;
         unsigned int tsize;
         T* _front;
         T* _back;
-        T** startRow;
-        T** ofront;
-        T** oback;
 
     private:
         // -----
@@ -145,8 +141,7 @@ class Deque {
         // -----
 
         bool valid () const {
-            //return (!_front && !_back && !(container + tsize)) || (_front <= _back) && (_back <= (container + tsize));
-            return true;}
+            return (!_front && !_back && !(container + tsize)) || (_front <= _back) && (_back <= (container + tsize));}
 
     public:
         // --------
@@ -495,15 +490,11 @@ class Deque {
         explicit Deque (const allocator_type& a = allocator_type()) {
             _a = a;
             ROWS = 10;
-            COLUMNS = 10;
-            tsize = 0;
-            container = _a2.allocate(ROWS);
+            tsize = ROWS;
+            container = _a.allocate(ROWS);
             _size = 0;
-            _front = 0;
+            _front = container + (ROWS / 2);
             _back = _front;
-            startRow = container;
-            ofront = container;
-            oback = ofront + ROWS;
             assert(valid());}
 
         /**
@@ -512,31 +503,42 @@ class Deque {
         explicit Deque (size_type s, const_reference v = value_type(), const allocator_type& a = allocator_type()) {
             _a = a;
             _size = s;
-            tsize = s;
-            while(tsize % 10 != 0)
-                tsize++;
-            ROWS = tsize / 10;
-            COLUMNS = 10;
-            container = _a2.allocate(ROWS);
-            for(int i = 0; i < ROWS; i++)
-                *container = _a.allocate(COLUMNS);
-            int hml = _size;
-            int start = (tsize - _size) / 2;
-            uninitialized_fill(_a, *container + start, *container + COLUMNS, v);
-            hml = hml - (COLUMNS - start);
-            int counter = 1;
-            while(hml > 10)
-            {
-                uninitialized_fill(_a, *(container + counter), *(container + counter) + COLUMNS, v);
-                counter++;
-                hml -= 10;
+            ROWS = 10;
+            tsize = ROWS * (((_size / ROWS) + 1) * 2);
+            if(s > 5)
+                container = _a.allocate(tsize);
+            else
+                container = _a.allocate(ROWS);
+
+            _front = container + (tsize / 2);
+            _back = _front + _size;
+
+            uninitialized_fill(_a, _front, _back, v);
+/*
+            for(int i = 0; i < 5; i++) {
+                if(s == 0)
+                    break;
+                *our_back = v;
+                our_back++;
+                s--;
             }
-            uninitialized_fill(_a, *(container + counter), *(container + counter) + hml + 1, v);
-            _front = *container + start;
-            _back = *(container + counter) + hml + 1;
-            startRow = container;
-            ofront = container;
-            oback = ofront + ROWS;
+
+            int tmp = 1;
+            while(s > 10) {
+                container[(ROWS / 2) + tmp] = a.allocate(COLUMNS);
+                fill(container[(ROWS / 2) + tmp], container[(ROWS / 2) + tmp] + COLUMNS, v);
+                s -= 10;
+                tmp++;
+            }
+
+            our_back = container[(ROWS / 2) + tmp][0];
+
+            while(s > 0) {
+                *our_back = v;
+                our_back++;
+                s--;
+            }
+*/
             assert(valid());}
 
         /**
@@ -544,40 +546,13 @@ class Deque {
          */
         Deque (const Deque& that) {
             _a = that._a;
-            _a2 = that._a2;
-            _size = that._size;
-            tsize = _size;
-            while(tsize % 10 != 0)
-              tsize++;
-            ROWS = _size/10;
-            if(ROWS == 0)
-                ROWS = 1;
-            COLUMNS = that.COLUMNS;
-            container = _a2.allocate(ROWS);
-            for(int i = 0; i < ROWS; i++)
-              *container = _a.allocate(COLUMNS);
-            int hml = _size;
-            int start = (tsize - _size) / 2;
-            uninitialized_copy(_a, that._front, *that.startRow + COLUMNS, *container + start);
-            hml = hml - (COLUMNS - start);
-            int counter = 1;
-            while(hml > 10)
-            {
-                uninitialized_copy(_a, *(that.startRow + counter), *(that.startRow + counter) + COLUMNS, *(container + counter));
-                hml -= 10;
-                ++counter;
-            }
-            uninitialized_copy(_a, *(that.startRow + counter), that._back, *(container + counter));
-            _front = *container + start;
-            _back = *(container + counter) + hml + 1;
-            startRow = container;
-            ofront = container;
-            oback = ofront + ROWS;
-            
-            /*int offset = that._front - that.container;
+            ROWS = that.ROWS;
+            container = _a.allocate(that.tsize);
+            tsize = that.tsize;
+            int offset = that._front - that.container;
             _front = container + offset;
             _back = uninitialized_copy(_a, that._front, that._back, _front);
-            _size = that._size;*/
+            _size = that._size;
             assert(valid());}
 
         // ----------
@@ -587,12 +562,9 @@ class Deque {
         /**
          * <your documentation>
          */
-        ~Deque () {/*
-            destroy(_a, _front, _front + COLUMNS
-            for(int i = 0; i < ROWS; i++)
-            {
-                
-            }*/
+        ~Deque () {
+            destroy(_a, _front, _back);
+            _a.deallocate(container, tsize);
             assert(valid());}
 
         // ----------
