@@ -38,7 +38,7 @@ struct TestDeque : CppUnit::TestFixture {
     void test_constructor () {
         const C x;
         const C y(10);
-        const C z(10, 2);
+        const C z(50, 2);
         const C t = z;}
 
     // -------------
@@ -48,8 +48,22 @@ struct TestDeque : CppUnit::TestFixture {
     void test_equality () {
         const C x(10, 2);
         const C y(10, 2);
+        int counter = 0;
+        while(counter < x.size())
+        {
+            cout << *(x.begin() + counter) << " ";
+            counter++;
+        }
+        cout << endl;
         assert(x == y);
         assert(!(x != y));}
+
+    void test_equality2 () {
+        //const C x(50, 2);
+        //const C y(50, 2);
+        //assert(x == y);
+        //assert(!(x != y));}
+    }
 
     // ---------------
     // test_comparison
@@ -266,7 +280,8 @@ struct TestDeque : CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE(TestDeque);
     CPPUNIT_TEST(test_constructor);
-    /*CPPUNIT_TEST(test_equality);
+    CPPUNIT_TEST(test_equality);
+    /*CPPUNIT_TEST(test_equality2);
     CPPUNIT_TEST(test_comparison);
     CPPUNIT_TEST(test_assignment);
     CPPUNIT_TEST(test_subscript);
