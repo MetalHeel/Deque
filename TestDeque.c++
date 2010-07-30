@@ -49,12 +49,13 @@ struct TestDeque : CppUnit::TestFixture {
         const C x(10, 2);
         const C y(10, 2);
         int counter = 0;
-        while(counter < x.size())
+        while((x.begin() + counter) != x.end())
         {
-            cout << *(x.begin() + counter) << " ";
-            counter++;
+          cout << *(x.begin() + counter) << " ";
+          if((counter + 1) % 10 == 0)
+            cout << endl;
+          counter++;
         }
-        cout << endl;
         assert(x == y);
         assert(!(x != y));}
 

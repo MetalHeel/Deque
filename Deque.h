@@ -825,8 +825,8 @@ class Deque {
             int index;
             if((_front - *startRow) == 0 && (_size%10) == 0)
             {
-                 rowOffset = (_size / 10) - 1;
-                 index = 9;
+                rowOffset = (_size / 10) - 1;
+                index = 10;
             }
             else
             {
@@ -838,20 +838,20 @@ class Deque {
         /**
          * <your documentation>
          */
-            const_iterator end () const {
-              int rowOffset;
-              int index;
-              if((_front - *startRow) == 0 && (_size%10) == 0)
-              {
-                  rowOffset = (_size / 10) - 1;
-                  index = 9;
-              }
-              else
-              {
-                  rowOffset = _size / 10; 
-                  index = _back - *(startRow + rowOffset);
-              }
-              return const_iterator(_back, startRow + rowOffset, index);}
+          const_iterator end () const {
+            int rowOffset;
+            int index;
+            if((_front - *startRow) == 0 && (_size%10) == 0)
+            {
+                rowOffset = (_size / 10) - 1;
+                index = 10;
+            }
+            else
+            {
+                rowOffset = _size / 10; 
+                index = _back - *(startRow + rowOffset);
+            }
+            return const_iterator(_back, startRow + rowOffset, index);}
 
         // -----
         // erase
