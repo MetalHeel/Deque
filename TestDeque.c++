@@ -41,6 +41,12 @@ struct TestDeque : CppUnit::TestFixture {
         const C z(50, 2);
         const C t = z;}
 
+    void test_constructor2 () {
+        const C x(8, 3);
+        const C y(13, 7);
+        const C z(666, 2);
+        const C t = z;}
+
     // -------------
     // test_equality
     // -------------
@@ -48,23 +54,29 @@ struct TestDeque : CppUnit::TestFixture {
     void test_equality () {
         const C x(10, 2);
         const C y(10, 2);
-        int counter = 0;
-        while((x.begin() + counter) != x.end())
-        {
-          cout << *(x.begin() + counter) << " ";
-          if((counter + 1) % 10 == 0)
-            cout << endl;
-          counter++;
-        }
+        assert(x == y);}
+
+    void test_equality2 () {
+        const C x(50, 2);
+        const C y(50, 2);
         assert(x == y);
         assert(!(x != y));}
 
-    void test_equality2 () {
-        //const C x(50, 2);
-        //const C y(50, 2);
-        //assert(x == y);
-        //assert(!(x != y));}
-    }
+    void test_equality3 () {
+              C x(45, 2);
+        x.push_back(2);
+        x.push_back(2);
+        x.push_back(2);
+        x.push_back(2);
+        x.push_back(2);
+        const C y(50, 2);
+        assert(x == y);
+        assert(!(x != y));}
+
+    void test_equality4 () {
+        const C y(666, 2);
+        const C z(666, 2);
+        assert(y == z);}
 
     // ---------------
     // test_comparison
@@ -78,6 +90,22 @@ struct TestDeque : CppUnit::TestFixture {
         assert(y > x);
         assert(!(y <= x));}
 
+    void test_comparison2 () {
+        const C x(10, 3);
+        const C y(20, 3);
+        assert(x < y);
+        assert(!(x >= y));
+        assert(y > x);
+        assert(!(y <= x));}
+
+    void test_comparison3 () {
+        const C x(20, 2);
+        const C y(20, 3);
+        assert(x < y);
+        assert(!(x >= y));
+        assert(y > x);
+        assert(!(y <= x));}
+
     // ---------------
     // test_assignment
     // ---------------
@@ -85,7 +113,22 @@ struct TestDeque : CppUnit::TestFixture {
     void test_assignment () {
               C x(10, 2);
         const C y(20, 3);
-        x = y;}
+        x = y;
+        assert(x == y);}
+
+    void test_assignment2 () {
+              C x(20, 2);
+        const C y(10, 3);
+        x = y;
+        assert(x == y);}
+
+    void test_assignment3 () {
+              C x(10, 2);
+              x.pop_back();
+              x.pop_back();
+        const C y(10, 3);
+        x = y;
+        assert(x == y);}
 
     // --------------
     // test_subscript
@@ -97,6 +140,35 @@ struct TestDeque : CppUnit::TestFixture {
         typename C::reference v = x[0];
         typename C::const_reference w = y[0];
         assert(v == w);}
+
+    void test_subscript2 () {
+              C x(10, 2);
+        const C y(10, 2);
+        typename C::reference v = x[3];
+        typename C::const_reference w = y[8];
+        assert(v == w);}
+
+    void test_subscript3 () {
+        C x(10);
+        C y(10);
+        x.push_back(1);
+        x.push_back(1);
+        x.push_back(1);
+        x.push_back(1);
+        x.push_back(1);
+        y.push_back(1);
+        y.push_back(1);
+        y.push_back(1);
+        y.push_back(1);
+        y.push_back(1);
+        typename C::reference v = x[2];
+        typename C::const_reference w = y[2];
+        assert(v == w);}
+
+    void test_subscript4 () {
+              C x(10, 2);
+        x.insert(x.begin() + 4, 0);
+        assert(x[4] == 0);}
 
     // -------
     // test_at
@@ -158,7 +230,7 @@ struct TestDeque : CppUnit::TestFixture {
         const C y(10, 2);
         typename C::iterator p = x.end();
         typename C::const_iterator q = y.end();
-        assert(*p == *q);}
+        assert(*(p-1) == *(q-1));}
 
     // ----------
     // test_erase
@@ -168,6 +240,13 @@ struct TestDeque : CppUnit::TestFixture {
         C x(10, 2);
         typename C::iterator p = x.erase(x.begin());
         assert(p == x.begin());}
+
+    void test_erase2 () {
+        C x(10, 2);
+        C y(9, 2);
+        typename C::iterator p = x.erase(x.begin());
+        assert(p == x.begin());
+        assert(x == y);}
 
     // ----------
     // test_front
@@ -180,6 +259,14 @@ struct TestDeque : CppUnit::TestFixture {
         typename C::const_reference w = y.front();
         assert(v == w);}
 
+    // ---------------
+    // test_push_front
+    // ---------------
+
+    void test_push_front () {
+        C x(10, 2);
+        x.push_front(3);}
+
     // -----------
     // test_insert
     // -----------
@@ -188,6 +275,11 @@ struct TestDeque : CppUnit::TestFixture {
         C x(10, 2);
         typename C::iterator p = x.insert(x.begin(), 3);
         assert(p == x.begin());}
+        
+    void test_insert2 () {
+        C x(10, 2);
+        typename C::iterator p = x.insert(x.begin()+1, 3);
+        assert(p == x.begin()+1);}
 
     // -------------
     // test_pop_back
@@ -263,6 +355,12 @@ struct TestDeque : CppUnit::TestFixture {
         typename C::const_reference w = *b;
         assert(v == w);}
 
+    void test_const_iterator2 () {
+        const C x(10, 2);
+        typename C::const_iterator b = x.begin();
+        typename C::const_iterator e = x.end();
+        assert(b + x.size() == e);}
+
     // ---------------
     // test_algorithms
     // ---------------
@@ -281,11 +379,20 @@ struct TestDeque : CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE(TestDeque);
     CPPUNIT_TEST(test_constructor);
+    CPPUNIT_TEST(test_constructor2);
     CPPUNIT_TEST(test_equality);
-    /*CPPUNIT_TEST(test_equality2);
+    CPPUNIT_TEST(test_equality2);
+    CPPUNIT_TEST(test_equality3);
+    CPPUNIT_TEST(test_equality4);
     CPPUNIT_TEST(test_comparison);
+    CPPUNIT_TEST(test_comparison2);
+    CPPUNIT_TEST(test_comparison3);
     CPPUNIT_TEST(test_assignment);
+    CPPUNIT_TEST(test_assignment2);
+    CPPUNIT_TEST(test_assignment3);
     CPPUNIT_TEST(test_subscript);
+    CPPUNIT_TEST(test_subscript2);
+    CPPUNIT_TEST(test_subscript3);
     CPPUNIT_TEST(test_at);
     CPPUNIT_TEST(test_back);
     CPPUNIT_TEST(test_begin);
@@ -293,7 +400,9 @@ struct TestDeque : CppUnit::TestFixture {
     CPPUNIT_TEST(test_empty);
     CPPUNIT_TEST(test_end);
     CPPUNIT_TEST(test_erase);
+    CPPUNIT_TEST(test_erase2);
     CPPUNIT_TEST(test_front);
+    CPPUNIT_TEST(test_push_front);
     CPPUNIT_TEST(test_insert);
     CPPUNIT_TEST(test_pop_back);
     CPPUNIT_TEST(test_push_back);
@@ -302,7 +411,8 @@ struct TestDeque : CppUnit::TestFixture {
     CPPUNIT_TEST(test_swap);
     CPPUNIT_TEST(test_iterator);
     CPPUNIT_TEST(test_const_iterator);
-    CPPUNIT_TEST(test_algorithms);*/
+    CPPUNIT_TEST(test_const_iterator2);
+    CPPUNIT_TEST(test_algorithms);
     CPPUNIT_TEST_SUITE_END();};
 
 // ----
